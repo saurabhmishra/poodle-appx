@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import queryString from 'query-string'
 import {
   Box,
   makeStyles
@@ -19,6 +20,7 @@ const {
 import {
   useNavigate,
   useLocation,
+  useParams,
 } from 'react-router-dom'
 
 import * as api from 'app-x/api'
@@ -199,22 +201,62 @@ const ComponentTree = (props) => {
     setDeleteDialogCallback,
   } = useContext(ComponentProvider.Context)
 
-  const router = useContext(RouterProvider.Context)
-  const navigate = useNavigate()
-  const location = useLocation()
-  const pathname = (() => {
-    if (location.pathname.startsWith(router.basename)) {
-      return ('/' + location.pathname.substring(router.basename.length)).replace(/^\/+/, '/')
-    } else {
-      return location.pathname
+
+  /* router */
+  const router = (() => {
+    const routerContext = useContext(RouterProvider.Context)
+
+    const _navigate = useNavigate()
+
+    const navigate = (path) => {
+      const new_path = (routerContext.basename + "/" + path).replace(
+        /\/+/g,
+        "/"
+      )
+
+      _navigate(new_path)
+    }
+
+    const _location = useLocation()
+
+    const pathname = (() => {
+      if (_location.pathname.startsWith(routerContext.basename)) {
+        const newUrl =
+          "/" + _location.pathname.substring(routerContext.basename.length)
+
+        return newUrl.replace(/\/+/g, "/")
+      } else {
+        return _location.pathname
+      }
+    })()
+
+    const search = _location.search
+
+    const params = useParams()
+    return {
+      ...routerContext,
+      navigate: navigate,
+      pathname: pathname,
+      search: search,
+      params: params,
     }
   })()
+  /* router */
 
   // context menu
   const [ contextAnchorEl, setContextAnchorEl ] = useState(null)
 
   // tree ref
   const componentTreeRef = React.createRef()
+
+  // useEffoct on pathname
+  useEffect(() => {
+    if (!(router?.pathname?.startsWith('/ui_component/'))) {
+      setSelectedKey(null)
+      setContextKey(null)
+      unselectNav()
+    }
+  }, [router.pathname])
 
   // nav deployment change
   useEffect(() => {
@@ -234,7 +276,38 @@ const ComponentTree = (props) => {
           const translated = transformTree(data)
           // console.log(translated)
           setTreeData(translated)
-          if (navSelected?.type !== 'ui_component') {
+          // console.log(`translated`, translated)
+          if (router?.pathname.startsWith('/ui_component')) {
+            const parsed = queryString.parse(router.search)
+            if (!!parsed.s) {
+              // console.log(`parsed.s`, parsed.s)
+              tree_traverse(translated, parsed.s, (item, index, arr) => {
+                if (item.isLeaf) {
+                  // console.log(item)
+                  setSelectedKey(item.key)
+                  setContextKey(item.key)
+                  selectComponent({
+                    ui_component_name: item.key,
+                    ui_component_type: item.type,
+                    ui_component_spec: item.spec,
+                  })
+                  // expand all parent nodes
+                  const expands = []
+                  const parts = item.key.split('/')
+                  for (let i = 0; i < parts.length; i++) {
+                    expands.push(parts.slice(0,i+1).join('/'))
+                  }
+                  setExpandedKeys(expands)
+                } else {
+                  setSelectedKey(null)
+                  setContextKey(null)
+                }
+              })
+            } else {
+              setSelectedKey(null)
+              setContextKey(null)
+            }
+          } else {
             setSelectedKey(null)
             setContextKey(null)
           }
@@ -261,9 +334,9 @@ const ComponentTree = (props) => {
   },
   [
     navDeployment,
-    navComponent,
-    navRoute,
-    navSelected,
+    // navComponent,
+    // navRoute,
+    // navSelected,
     loadTimer
   ])
 
@@ -316,6 +389,7 @@ const ComponentTree = (props) => {
 
   // select
   const onSelect = key => {
+    const deploymentKey = `/${navDeployment.namespace}/${navDeployment.ui_name}/${navDeployment.ui_deployment}/`
     // console.log(key)
     if (!!key.length && key[0] !== selectedKey) {
       tree_traverse(treeData, key[0], (item, index, arr) => {
@@ -328,8 +402,8 @@ const ComponentTree = (props) => {
             ui_component_type: item.type,
             ui_component_spec: item.spec,
           })
-          const navTarget = (`${router.basename}/ui_component/${item.key}`).replace(/\/+/g, '/')
-          navigate(navTarget)
+          const navTarget = (`/ui_component/${deploymentKey}?s=${item.key}`).replace(/\/+/g, '/')
+          router.navigate(navTarget)
         } else {
           // expand folder & key
           const idx = expandedKeys.indexOf(item.key)
@@ -345,7 +419,8 @@ const ComponentTree = (props) => {
         }
       })
     } else {
-      navigate(`${router.basename}/ui_component/`).replace(/\/+/g, '/')
+      const navTarget = `/ui_component/${deploymentKey}`.replace(/\/+/g, '/')
+      router.navigate(navTarget)
       setSelectedKey(null)
       setContextKey(null)
       unselectNav()

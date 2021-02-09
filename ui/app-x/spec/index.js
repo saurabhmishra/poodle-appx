@@ -5,17 +5,21 @@ import { REGEX_VAR, classes } from 'app-x/spec/classes.js'
 import react_element from 'app-x/spec/react_element.js'
 import react_html from 'app-x/spec/react_html.js'
 import react_state from 'app-x/spec/react_state.js'
-import react_context from 'app-x/spec/react_context.js'
 import react_effect from 'app-x/spec/react_effect.js'
+import react_context from 'app-x/spec/react_context.js'
 // forms and inputs
-import react_form from 'app-x/spec/react_form.js'
-import input_text from 'app-x/spec/input_text.js'
-import input_switch from 'app-x/spec/input_switch.js'
-import input_select from 'app-x/spec/input_select.js'
-import input_rule from 'app-x/spec/input_rule.js'
-// table and table options
-import react_table from 'app-x/spec/react_table.js'
-import table_column from 'app-x/spec/table_column.js'
+import appx_form from 'app-x/spec/appx_form.js'
+import appx_input_text from 'app-x/spec/appx_input_text.js'
+import appx_input_textarray from 'app-x/spec/appx_input_textarray.js'
+import appx_input_switch from 'app-x/spec/appx_input_switch.js'
+import appx_input_select from 'app-x/spec/appx_input_select.js'
+import appx_input_tabular from 'app-x/spec/appx_input_tabular.js'
+import appx_input_array from 'app-x/spec/appx_input_array.js'
+import appx_input_submit from 'app-x/spec/appx_input_submit.js'
+import appx_input_rule from 'app-x/spec/appx_input_rule.js'
+// appx table and columns
+import appx_table from 'app-x/spec/appx_table.js'
+import appx_table_column from 'app-x/spec/appx_table_column.js'
 // javascript classes
 import js_null from 'app-x/spec/js_null.js'
 import js_string from 'app-x/spec/js_string.js'
@@ -28,8 +32,9 @@ import js_import from 'app-x/spec/js_import.js'
 import js_expression from 'app-x/spec/js_expression.js'
 import js_statement from 'app-x/spec/js_statement.js'
 import js_function from 'app-x/spec/js_function.js'
+import js_call from 'app-x/spec/js_call.js'
 // map, reduce, swith, filter
-import js_switch from 'app-x/spec/js_switch.js'
+import js_condition from 'app-x/spec/js_condition.js'
 import js_map from 'app-x/spec/js_map.js'
 import js_reduce from 'app-x/spec/js_reduce.js'
 import js_filter from 'app-x/spec/js_filter.js'
@@ -39,9 +44,8 @@ import mui_theme from 'app-x/spec/mui_theme.js'
 // routes
 import route_path from 'app-x/spec/route_path.js'
 import route_context from 'app-x/spec/route_context.js'
-// appx
+// appx api
 import appx_api from 'app-x/spec/appx_api.js'
-import appx_route from 'app-x/spec/appx_route.js'
 
 // check type spec
 function check_type_spec(typeSpec) {
@@ -115,17 +119,21 @@ const types = [
   react_element,
   react_html,
   react_state,
-  react_context,
   react_effect,
+  react_context,
   // form and inputs
-  react_form,
-  input_text,
-  input_switch,
-  input_select,
-  input_rule,
-  // table and table options
-  react_table,
-  table_column,
+  appx_form,
+  appx_input_text,
+  appx_input_textarray,
+  appx_input_switch,
+  appx_input_select,
+  appx_input_tabular,
+  appx_input_array,
+  appx_input_submit,
+  appx_input_rule,
+  // table and columns
+  appx_table,
+  appx_table_column,
   // javascript classes,
   js_null,
   js_string,
@@ -138,8 +146,9 @@ const types = [
   js_expression,
   js_statement,
   js_function,
+  js_call,
   // map, reduce, switch, filter
-  js_switch,
+  js_condition,
   js_map,
   js_reduce,
   js_filter,
@@ -151,7 +160,6 @@ const types = [
   route_context,
   // appx
   appx_api,
-  appx_route,
   // map
 ]
 .map(item => {

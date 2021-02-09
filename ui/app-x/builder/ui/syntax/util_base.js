@@ -164,6 +164,21 @@ const groups = {
     'js/object',
     'js/array',
   ],
+  // js advanced
+  js_advanced: [
+    'js/import',
+    'js/expression',
+    'js/statement',
+    'js/function',
+    'js/call',
+  ],
+  // js controls
+  js_control: [
+    'js/condition',
+    'js/map',
+    'js/reduce',
+    'js/filter',
+  ],
   // react
   react: [
     'react/element',
@@ -173,31 +188,21 @@ const groups = {
     'react/effect',
   ],
   // form / inputs
-  form_input: [
-    'react/form',
-    'input/text',
-    'input/switch',
-    'input/select',
-    'input/rule',
+  appx_form: [
+    'appx/form',
+    'appx/input/text',
+    'appx/input/textarray',
+    'appx/input/switch',
+    'appx/input/select',
+    'appx/input/tabular',
+    'appx/input/array',
+    'appx/input/submit',
+    'appx/input/rule',
   ],
-  // table / options
-  table_options: [
-    'react/table',
-    'table/column',
-  ],
-  // js advanced
-  js_advanced: [
-    'js/import',
-    'js/expression',
-    'js/statement',
-    'js/function',
-  ],
-  // js controls
-  js_control: [
-    'js/switch',
-    'js/map',
-    'js/reduce',
-    'js/filter',
+  // table / columns
+  appx_table: [
+    'appx/table',
+    'appx/table/column',
   ],
   // mui
   mui: [
@@ -209,7 +214,6 @@ const groups = {
     'route/context',
     'route/path',
     'appx/api',
-    // 'appx/route',
   ],
 }
 
@@ -283,26 +287,26 @@ function lookup_changeable_types(type) {
   (
     type === 'react/element'
     || type === 'react/html'
-    || type === 'react/form'
   )
   {
     return [
       'react/element',
       'react/html',
-      'react/form',
     ]
   }
   else if
   (
-    type === 'input/text'
-    || type === 'input/select'
-    || type === 'input/switch'
+    type === 'appx/input/text'
+    || type === 'appx/input/textarray'
+    || type === 'appx/input/select'
+    || type === 'appx/input/switch'
   )
   {
     return [
-      'input/text',
-      'input/select',
-      'input/switch',
+      'appx/input/text',
+      'appx/input/textarray',
+      'appx/input/select',
+      'appx/input/switch',
     ]
   }
   else
@@ -464,7 +468,7 @@ const lookup_types_for_spec = (typeSpec) => {
 const type_matches_spec = (data_type, typeSpec) => {
   // type spec must be an array
   if (!Array.isArray(typeSpec)) {
-    throw new Error(`ERROR: type spec is not array`)
+    throw new Error(`ERROR: type spec is not an array`)
   }
   // iterate type spec
   return !!typeSpec.find(spec => {

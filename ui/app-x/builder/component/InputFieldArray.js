@@ -170,6 +170,7 @@ const InputFieldArray = ((props) => {
             <InputLabel
               shrink={true}
               required={!!childSpec.required}
+              color='secondary'
               >
               {childSpec.desc}
             </InputLabel>
@@ -209,7 +210,7 @@ const InputFieldArray = ((props) => {
                           try {
                             return !!eval(rule.data) || rule.message
                           } catch (e) {
-                            return String(e)
+                            return e.message || String(e)
                           }
                         }
                       }
@@ -230,7 +231,7 @@ const InputFieldArray = ((props) => {
                           try {
                             return !!eval(rule.data) || rule.message
                           } catch (e) {
-                            return String(e)
+                            return e.message || String(e)
                           }
                         }
                       }
@@ -254,6 +255,9 @@ const InputFieldArray = ((props) => {
                   if (inputSpec.kind === 'input/expression') {
                     result.validate[`validate_${count++}`] = (value) => {
                       try {
+                        if (!childSpec.required && !value.trim()) {
+                          return true
+                        }
                         parseExpression(String(value), {
                           plugins: [
                             'jsx', // support jsx
@@ -267,6 +271,9 @@ const InputFieldArray = ((props) => {
                   } else if (inputSpec.kind === 'input/statement') {
                     result.validate[`validate_${count++}`] = (value) => {
                       try {
+                        if (!childSpec.required && !value.trim()) {
+                          return true
+                        }
                         parse(value, {
                           allowReturnOutsideFunction: true, // allow return in the block statement
                           plugins: [
@@ -296,6 +303,7 @@ const InputFieldArray = ((props) => {
                           >
                           <Switch
                             name={itemName}
+                            color='secondary'
                             size={props.size}
                             checked={innerProps.value}
                             onChange={e => {
@@ -392,6 +400,7 @@ const InputFieldArray = ((props) => {
                               // size="small"
                               inputProps={{style:{height:0}}}
                               style={{height:0}}
+                              color='secondary'
                               error={!!_.get(errors, itemName)}
                               >
                             </Input>
@@ -425,6 +434,7 @@ const InputFieldArray = ((props) => {
                             value={innerProps.value}
                             disabled={!!props.disabled}
                             required={!!childSpec.required}
+                            color='secondary'
                             size={props.size}
                             onChange={e => {
                               let value = parseInt(e.target.value)
@@ -459,6 +469,7 @@ const InputFieldArray = ((props) => {
                             value={innerProps.value}
                             required={!!childSpec.required}
                             options={options}
+                            color='secondary'
                             size={props.size}
                             onChange={innerProps.onChange}
                             error={!!_.get(errors, itemName)}

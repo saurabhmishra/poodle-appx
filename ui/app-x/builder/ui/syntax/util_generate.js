@@ -36,6 +36,7 @@ import Bracket from 'app-x/icon/Bracket'
 import CurlyBracket from 'app-x/icon/CurlyBracket'
 import Calculator from 'app-x/icon/Calculator'
 import Function from 'app-x/icon/Function'
+import FunctionCall from 'app-x/icon/FunctionCall'
 import Code from 'app-x/icon/Code'
 import Branch from 'app-x/icon/Branch'
 import Route from 'app-x/icon/Route'
@@ -45,8 +46,12 @@ import State from 'app-x/icon/State'
 import Form from 'app-x/icon/Form'
 import Context from 'app-x/icon/Context'
 import InputText from 'app-x/icon/InputText'
+import InputTextArray from 'app-x/icon/InputTextArray'
 import InputSwitch from 'app-x/icon/InputSwitch'
 import InputSelect from 'app-x/icon/InputSelect'
+import InputTabular from 'app-x/icon/InputTabular'
+import InputArray from 'app-x/icon/InputArray'
+import InputSubmit from 'app-x/icon/InputSubmit'
 import InputRule from 'app-x/icon/InputRule'
 import Filter from 'app-x/icon/Filter'
 import API from 'app-x/icon/API'
@@ -156,7 +161,11 @@ function lookup_icon_for_input(input) {
 
     return <Function />
 
-  } else if (input._type === 'js/switch') {
+  } else if (input._type === 'js/call') {
+
+    return <FunctionCall />
+
+  } else if (input._type === 'js/condition') {
 
     return <Branch />
 
@@ -192,31 +201,47 @@ function lookup_icon_for_input(input) {
 
     return <Effect />
 
-  } else if (input._type === 'react/form') {
+  } else if (input._type === 'appx/form') {
 
     return <Form />
 
-  } else if (input._type === 'input/text') {
+  } else if (input._type === 'appx/input/text') {
 
     return <InputText />
 
-  } else if (input._type === 'input/switch') {
+  } else if (input._type === 'appx/input/textarray') {
+
+    return <InputTextArray />
+
+  } else if (input._type === 'appx/input/switch') {
 
     return <InputSwitch />
 
-  } else if (input._type === 'input/select') {
+  } else if (input._type === 'appx/input/select') {
 
     return <InputSelect />
 
-  } else if (input._type === 'input/rule') {
+  } else if (input._type === 'appx/input/tabular') {
+
+    return <InputTabular />
+
+  } else if (input._type === 'appx/input/array') {
+
+    return <InputArray />
+
+  } else if (input._type === 'appx/input/submit') {
+
+    return <InputSubmit />
+
+  } else if (input._type === 'appx/input/rule') {
 
     return <InputRule />
 
-  } else if (input._type === 'react/table') {
+  } else if (input._type === 'appx/table') {
 
     return <Table />
 
-  } else if (input._type === 'table/column') {
+  } else if (input._type === 'appx/table/column') {
 
     return <TableColumn />
 
@@ -345,7 +370,7 @@ function lookup_title_for_input(ref, input, array=false) {
 
   } else if (input._type === 'js/function') {
 
-    const name = 'func (' +
+    const name = ' (' +
       (
         input.params
           ? input.params
@@ -356,7 +381,12 @@ function lookup_title_for_input(ref, input, array=false) {
       +  ')'
     return prefix + (name.length > 32 ? name.substring(0, 30) + '...' : name)
 
-  } else if (input._type === 'js/switch') {
+  } else if (input._type === 'js/call') {
+
+    const name = input.name || 'call'
+    return prefix + (name.length > 32 ? name.substring(0, 30) + '...' : name) + ' (...)'
+
+  } else if (input._type === 'js/condition') {
 
     return prefix + 'Switch'
 
@@ -408,31 +438,56 @@ function lookup_title_for_input(ref, input, array=false) {
       +  ']'
     return prefix + (name.length > 32 ? name.substring(0, 30) + '...' : name)
 
-  } else if (input._type === 'react/form') {
+  } else if (input._type === 'appx/form') {
 
-    return prefix + input.name
+    const parsed = parse_var_full_path(input.name)
+    return prefix + parsed.full_paths.pop()
 
-  } else if (input._type === 'input/text') {
+  } else if (input._type === 'appx/input/text') {
 
-    return prefix + `Input [${input.name}]`
+    const parsed = parse_var_full_path(input.name)
+    return prefix + `${parsed.full_paths.pop()} [${input.id}]`
 
-  } else if (input._type === 'input/switch') {
+  } else if (input._type === 'appx/input/textarray') {
 
-    return prefix + `Input [${input.name}]`
+    const parsed = parse_var_full_path(input.name)
+    return prefix + `${parsed.full_paths.pop()} [${input.id}]`
 
-  } else if (input._type === 'input/select') {
+  } else if (input._type === 'appx/input/switch') {
 
-    return prefix + `Input [${input.name}]`
+    const parsed = parse_var_full_path(input.name)
+    return prefix + `${parsed.full_paths.pop()} [${input.id}]`
 
-  } else if (input._type === 'input/rule') {
+  } else if (input._type === 'appx/input/select') {
+
+    const parsed = parse_var_full_path(input.name)
+    return prefix + `${parsed.full_paths.pop()} [${input.id}]`
+
+  } else if (input._type === 'appx/input/tabular') {
+
+    const parsed = parse_var_full_path(input.name)
+    return prefix + `${parsed.full_paths.pop()} [${input.id}]`
+
+  } else if (input._type === 'appx/input/array') {
+
+    const parsed = parse_var_full_path(input.name)
+    return prefix + `${parsed.full_paths.pop()}`
+
+  } else if (input._type === 'appx/input/submit') {
+
+    const parsed = parse_var_full_path(input.name)
+    return prefix + `${parsed.full_paths.pop()}`
+
+  } else if (input._type === 'appx/input/rule') {
 
     return ref ? ref : ''
 
-  } else if (input._type === 'react/table') {
+  } else if (input._type === 'appx/table') {
 
-    return prefix + input.name
+    const parsed = parse_var_full_path(input.name)
+    return prefix + parsed.full_paths.pop()
 
-  } else if (input._type === 'table/column') {
+  } else if (input._type === 'appx/table/column') {
 
     return input.id || ''
 
@@ -870,7 +925,10 @@ function generate_tree_node(js_context, conf, input) {
                 thisNode.children.push(childNode)
                 // console.log(`childNode`, childNode)
             } else if (!!childSpec.required) {
-              throw new Error(`ERROR: unable to process child data [${_ref}] [${JSON.stringify(data)}]`)
+              if (thisNode.data[_ref] === undefined) {
+                // throw exception only if _ref is not already defined by _thisNode
+                throw new Error(`ERROR: unable to process child data [${_ref}] [${JSON.stringify(data)}]`)
+              }
             }
           }
         }

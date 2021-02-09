@@ -52,7 +52,6 @@ import { parse, parseExpression } from "@babel/parser"
 import * as api from 'app-x/api'
 import ReactIcon from 'app-x/icon/React'
 import AutoSuggest from 'app-x/builder/component/AutoSuggest'
-// import TextFieldArray from 'app-x/builder/component/TextFieldArray'
 import InputField from 'app-x/builder/component/InputField'
 import InputFieldArray from 'app-x/builder/component/InputFieldArray'
 import ControlledEditor from 'app-x/builder/component/ControlledEditor'
@@ -290,7 +289,7 @@ const SyntaxAddDialog = (props) => {
     } catch (err) {
       console.log(`Add`, data, err)
       notification.error({
-        message: `Failed to Add [ ${nodeType?.replace('/', ' / ')} ]`,
+        message: `Failed to Add [ ${nodeType?.replaceAll('/', ' / ')} ]`,
         description: String(err),
         placement: 'bottomLeft',
       })
@@ -395,8 +394,8 @@ const SyntaxAddDialog = (props) => {
               <Typography id="alert-dialog-title" variant="h6">
                 {
                   !!nodeRef
-                  ? `${nodeRef} - [ ${nodeType?.replace('/', ' / ')} ]`
-                  : `[ ${nodeType?.replace('/', ' / ')} ]`
+                  ? `${nodeRef} - [ ${nodeType?.replaceAll('/', ' / ')} ]`
+                  : `[ ${nodeType?.replaceAll('/', ' / ')} ]`
                 }
               </Typography>
             </ListItem>
@@ -524,7 +523,7 @@ const SyntaxAddDialog = (props) => {
                     if (!!found) {
                       const typeSpec = found._childNode.types === 'inherit' ? found.types : found._childNode.types
                       return type_matches_spec(getValues('_type'), typeSpec)
-                        || `Reference name [ ${value} ] does not allow type [ ${getValues('_type')?.replace('/', ' / ')} ]`
+                        || `Reference name [ ${value} ] does not allow type [ ${getValues('_type')?.replaceAll('/', ' / ')} ]`
                     }
                   }
                 },
@@ -540,6 +539,8 @@ const SyntaxAddDialog = (props) => {
                     <AutoSuggest
                       label="Reference"
                       name="_ref"
+                      color='secondary'
+                      size="small"
                       disabled={!!disabled["_ref"]}
                       required={true}
                       onChange={value => {
@@ -550,9 +551,7 @@ const SyntaxAddDialog = (props) => {
                       }}
                       value={innerProps.value}
                       options={parentSpec?.children?.filter(spec => !!spec._childNode).map(child => child.name).filter(name => name !== '*') || []}
-                      size="small"
                       error={!!errors._ref}
-                      size="small"
                       helperText={errors._ref?.message}
                       />
                   </FormControl>
@@ -592,7 +591,7 @@ const SyntaxAddDialog = (props) => {
                     if (!!found) {
                       const typeSpec = found._childNode.types === 'inherit' ? found.types : found._childNode.types
                       return type_matches_spec(value, typeSpec)
-                        || `Reference name [ ${getValues('_ref')} ] does not allow type [ ${value?.replace('/', ' / ')} ]`
+                        || `Reference name [ ${getValues('_ref')} ] does not allow type [ ${value?.replaceAll('/', ' / ')} ]`
                     }
                   }
                 }
@@ -606,6 +605,7 @@ const SyntaxAddDialog = (props) => {
                       name="_type"
                       value={innerProps.value}
                       required={true}
+                      color='secondary'
                       size="small"
                       onChange={
                         e => {
@@ -635,7 +635,7 @@ const SyntaxAddDialog = (props) => {
                                       { lookup_icon_for_type(type) }
                                     </ListItemIcon>
                                     <Typography variant="inherit" noWrap={true}>
-                                      {type.replace('/', ' / ')}
+                                      {type.replaceAll('/', ' / ')}
                                     </Typography>
                                   </MenuItem>
                                 )
@@ -714,6 +714,7 @@ const SyntaxAddDialog = (props) => {
                           label="Position"
                           select={true}
                           name="_pos"
+                          color='secondary'
                           size="small"
                           value={innerProps.value}
                           onChange={innerProps.onChange}
@@ -773,6 +774,7 @@ const SyntaxAddDialog = (props) => {
                           select={true}
                           name="_pos"
                           value={innerProps.value}
+                          color='secondary'
                           size="small"
                           onChange={innerProps.onChange}
                           error={!!errors._pos}

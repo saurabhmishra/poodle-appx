@@ -52,7 +52,6 @@ import { parse, parseExpression } from "@babel/parser"
 import * as api from 'app-x/api'
 import ReactIcon from 'app-x/icon/React'
 import AutoSuggest from 'app-x/builder/component/AutoSuggest'
-// import TextFieldArray from 'app-x/builder/component/TextFieldArray'
 import InputField from 'app-x/builder/component/InputField'
 import InputFieldArray from 'app-x/builder/component/InputFieldArray'
 import ControlledEditor from 'app-x/builder/component/ControlledEditor'
@@ -286,7 +285,7 @@ const SyntaxMoveDialog = (props) => {
     } catch (err) {
       console.log(`Move`, data, err)
       notification.error({
-        message: `Failed to Move [ ${nodeType?.replace('/', ' / ')} ]`,
+        message: `Failed to Move [ ${nodeType?.replaceAll('/', ' / ')} ]`,
         description: String(err),
         placement: 'bottomLeft',
       })
@@ -338,8 +337,8 @@ const SyntaxMoveDialog = (props) => {
               <Typography id="alert-dialog-title" variant="h6">
                 {
                   !!nodeRef
-                  ? `${nodeRef} - [ ${nodeType?.replace('/', ' / ')} ]`
-                  : `[ ${nodeType?.replace('/', ' / ')} ]`
+                  ? `${nodeRef} - [ ${nodeType?.replaceAll('/', ' / ')} ]`
+                  : `[ ${nodeType?.replaceAll('/', ' / ')} ]`
                 }
               </Typography>
             </ListItem>
@@ -468,7 +467,7 @@ const SyntaxMoveDialog = (props) => {
                     if (!!found) {
                       const typeSpec = found._childNode.types === 'inherit' ? found.types : found._childNode.types
                       return type_matches_spec(getValues('_type'), typeSpec)
-                        || `Reference name [ ${value} ] does not allow type [ ${getValues('_type')?.replace('/', ' / ')} ]`
+                        || `Reference name [ ${value} ] does not allow type [ ${getValues('_type')?.replaceAll('/', ' / ')} ]`
                     }
                   }
                 },
@@ -486,6 +485,8 @@ const SyntaxMoveDialog = (props) => {
                     <AutoSuggest
                       label="Reference"
                       name="_ref"
+                      color='secondary'
+                      size="small"
                       disabled={!!disabled["_ref"]}
                       required={true}
                       onChange={value => {
@@ -496,9 +497,7 @@ const SyntaxMoveDialog = (props) => {
                       }}
                       value={innerProps.value}
                       options={parentSpec?.children?.filter(spec => !!spec._childNode).map(child => child.name).filter(name => name !== '*') || []}
-                      size="small"
                       error={!!errors._ref}
-                      size="small"
                       helperText={errors._ref?.message}
                       />
                   </FormControl>
@@ -539,7 +538,7 @@ const SyntaxMoveDialog = (props) => {
                     if (!!found) {
                       const typeSpec = found._childNode.types === 'inherit' ? found.types : found._childNode.types
                       return type_matches_spec(value, typeSpec)
-                        || `Reference name [ ${getValues('_ref')} ] does not allow type [ ${value?.replace('/', ' / ')} ]`
+                        || `Reference name [ ${getValues('_ref')} ] does not allow type [ ${value?.replaceAll('/', ' / ')} ]`
                     }
                   }
                 }
@@ -555,6 +554,7 @@ const SyntaxMoveDialog = (props) => {
                       value={innerProps.value}
                       required={true}
                       disabled={true}
+                      color='secondary'
                       size="small"
                       onChange={
                         e => {
@@ -582,7 +582,7 @@ const SyntaxMoveDialog = (props) => {
                                       { lookup_icon_for_type(type) }
                                     </ListItemIcon>
                                     <Typography variant="inherit" noWrap={true}>
-                                      {type.replace('/', ' / ')}
+                                      {type.replaceAll('/', ' / ')}
                                     </Typography>
                                   </MenuItem>
                                 )

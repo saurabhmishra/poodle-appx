@@ -170,7 +170,7 @@ const InputField = ((props) => {
                 try {
                   return !!eval(rule.data) || rule.message
                 } catch (e) {
-                  return String(e)
+                  return e.message || String(e)
                 }
               }
             }
@@ -191,7 +191,7 @@ const InputField = ((props) => {
                 try {
                   return !!eval(rule.data) || rule.message
                 } catch (e) {
-                  return String(e)
+                  return e.message || String(e)
                 }
               }
             }
@@ -215,6 +215,9 @@ const InputField = ((props) => {
         if (inputSpec.kind === 'input/expression') {
           result.validate[`validate_${count++}`] = (value) => {
             try {
+              if (!childSpec.required && !value.trim()) {
+                return true
+              }
               parseExpression(String(value), {
                 plugins: [
                   'jsx', // support jsx
@@ -228,6 +231,9 @@ const InputField = ((props) => {
         } else if (inputSpec.kind === 'input/statement') {
           result.validate[`validate_${count++}`] = (value) => {
             try {
+              if (!childSpec.required && !value.trim()) {
+                return true
+              }
               parse(value, {
                 allowReturnOutsideFunction: true, // allow return in the block statement
                 plugins: [
@@ -266,6 +272,7 @@ const InputField = ((props) => {
                         <InputLabel
                           shrink={true}
                           required={!!childSpec.required}
+                          color='secondary'
                           >
                           {childSpec.desc}
                         </InputLabel>
@@ -274,6 +281,7 @@ const InputField = ((props) => {
                   }
                   <Switch
                     name={name}
+                    color='secondary'
                     size={props.size}
                     disabled={!!props.disabled}
                     checked={!!innerProps.value}
@@ -319,6 +327,7 @@ const InputField = ((props) => {
                         <InputLabel
                           shrink={true}
                           required={!!childSpec.required}
+                          color='secondary'
                           >
                           {childSpec.desc}
                         </InputLabel>
@@ -382,6 +391,7 @@ const InputField = ((props) => {
                     // size="small"
                     inputProps={{style:{height:0}}}
                     style={{height:0}}
+                    color='secondary'
                     error={!!_.get(errors, name)}
                     >
                   </Input>
@@ -409,7 +419,6 @@ const InputField = ((props) => {
                   className={styles.formControl}
                   error={!!_.get(errors, name)}
                   disabled={!!props.disabled}
-                  focused={monacoFocused}
                   >
                   {
                     !!childSpec.desc
@@ -419,6 +428,7 @@ const InputField = ((props) => {
                         <InputLabel
                           shrink={true}
                           required={!!childSpec.required}
+                          color='secondary'
                           >
                           {childSpec.desc}
                         </InputLabel>
@@ -432,6 +442,7 @@ const InputField = ((props) => {
                     value={innerProps.value}
                     disabled={!!props.disabled}
                     required={!!childSpec.required}
+                    color='secondary'
                     size={props.size}
                     onChange={e => {
                       innerProps.onChange(e.target.value)
@@ -495,6 +506,7 @@ const InputField = ((props) => {
                         <InputLabel
                           shrink={true}
                           required={!!childSpec.required}
+                          color='secondary'
                           >
                           {childSpec.desc}
                         </InputLabel>
@@ -507,6 +519,7 @@ const InputField = ((props) => {
                     value={innerProps.value}
                     disabled={!!props.disabled}
                     required={!!childSpec.required}
+                    color='secondary'
                     size={props.size}
                     margin={props.margin}
                     onChange={e => {
@@ -549,6 +562,7 @@ const InputField = ((props) => {
                         <InputLabel
                           shrink={true}
                           required={!!childSpec.required}
+                          color='secondary'
                           >
                           {childSpec.desc}
                         </InputLabel>
@@ -562,6 +576,7 @@ const InputField = ((props) => {
                     disabled={!!props.disabled}
                     required={!!childSpec.required}
                     options={options}
+                    color='secondary'
                     size={props.size}
                     margin={props.margin}
                     onChange={innerProps.onChange}

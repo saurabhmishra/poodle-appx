@@ -1,28 +1,38 @@
+<img alt="Poodle Logo" src="./poodle.svg" width="320px" height="320px" />
+
 # Project Poodle - App-X
 
-Project Poodle - AppX - app builder
+Project Poodle - App-X - app builder
 
-This repo is an application builder that enables easy building of database
-schema, rest API, and UI based on user defined model schema.
+This repo is an application builder that enables easy building of data schema,
+rest API, and UI
 
 
+# Prerequisites
 
-# Initial setup of App-X service
+- NodeJS __v14__ or above (ES module support)
+  https://nodejs.org/en/
+
+- MySQL __v5.7__ or above (JSON support)
+  https://www.mysql.com/
+
+
+# Initial setup of App-X
 
     -- edit app/init.d/init.yaml
        update credentials and mysql connection info
 
-    $ cd app && npm install && cd -                      (alternatively, 'make build')
+    $ make build    (this will build both server and client)
 
-    $ cd ui && npm install && cd -                       (alternatively, 'make build')
+    $ make init     (this will initialize the database)
 
-    $ sudo ./app/init.d/init.sh ./app/init.d/init.yaml   (alternatively, 'make init')
+    $ make run      (this will start the server)
 
-    $ ./app/schema.d/r001.p1/run.sh                      (alternatively, 'make init')
+    -- Use a browser to connect to http://localhost:3000/
 
-    $ ./app/app.sh -c ./app/conf.d/mysql_appx.conf       (alternatively, 'make')
 
-    -- start a new terminal
+
+    -- (Optional) To check out the APIs from CLI, start a new terminal
 
     $ http -a 'appx@LOCAL:P@@dle101' 'http://localhost:3000/api/sys/appx/base/namespace'
 

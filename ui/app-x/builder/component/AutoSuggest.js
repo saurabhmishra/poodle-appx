@@ -74,7 +74,8 @@ const AutoSuggest = (props) => {
           } else {
             return false
           }
-        }).map(n => ({value: n}))
+        })
+        .map(n => ({value: n}))
         setOptions(found_options)
       }}
       >
@@ -86,6 +87,7 @@ const AutoSuggest = (props) => {
         value={props.value}
         disabled={!!props.disabled}
         required={props.required}
+        color={props.color || 'primary'}
         size={props.size}
         margin={props.margin}
         onChange={e => {
@@ -107,6 +109,7 @@ AutoSuggest.propTypes = {
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string,
   type: PropTypes.string,
+  color: PropTypes.string,
   disabled: PropTypes.bool,
   rules: PropTypes.object,
   options: PropTypes.array,

@@ -43,7 +43,7 @@ const GlobalStyleProvider = (props) => {
   useEffect(() => {
     try {
       const userTheme = JSON.parse(globalThis.localStorage.getItem(`/app-x/ui/user/theme`))
-      if (!!userTheme.theme) {
+      if (!!userTheme?.theme) {
         try {
           setTheme(createMuiTheme(userTheme.theme))
         } catch (err) {
@@ -54,9 +54,9 @@ const GlobalStyleProvider = (props) => {
             setTheme(lightTheme)
           }
         }
-      } else if (userTheme.type === 'dark') {
+      } else if (userTheme?.type === 'dark') {
         setTheme(darkTheme)
-      } else if (userTheme.type === 'light') {
+      } else if (userTheme?.type === 'light') {
         setTheme(lightTheme)
       }
     } catch (err) {
@@ -122,8 +122,8 @@ const GlobalStyleProvider = (props) => {
         zIndex: 2010,
       },
       '::selection': {
-        color: theme?.palette.primary.contrastText,
-        backgroundColor: theme?.palette.primary.main,
+        color: theme?.palette.secondary.contrastText,
+        backgroundColor: theme?.palette.secondary.main,
       },
       // '.anticon': {
       //   color: theme?.palette.text.primary,

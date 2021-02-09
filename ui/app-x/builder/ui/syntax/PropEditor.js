@@ -33,9 +33,6 @@ import { parse, parseExpression } from "@babel/parser"
 // context provider
 import * as api from 'app-x/api'
 import Asterisk from 'app-x/icon/Asterisk'
-import TextFieldArray from 'app-x/builder/component/TextFieldArray'
-import InputProperties from 'app-x/builder/component/InputProperties'
-import InputList from 'app-x/builder/component/InputList'
 import NavProvider from 'app-x/builder/ui/NavProvider'
 import SyntaxProvider from 'app-x/builder/ui/syntax/SyntaxProvider'
 import YamlEditor from 'app-x/builder/ui/syntax/YamlEditor'
@@ -43,6 +40,8 @@ import ReactIcon from 'app-x/icon/React'
 import AutoSuggest from 'app-x/builder/component/AutoSuggest'
 import InputField from 'app-x/builder/component/InputField'
 import InputFieldArray from 'app-x/builder/component/InputFieldArray'
+import InputProperties from 'app-x/builder/component/InputProperties'
+import InputFieldTabular from 'app-x/builder/component/InputFieldTabular'
 import ControlledEditor from 'app-x/builder/component/ControlledEditor'
 import {
   generate_tree_node,
@@ -427,10 +426,10 @@ const PropEditor = (props) => {
             setValue(childSpec.name, thisNode.data[childSpec.name] === undefined ? '' : thisNode.data[childSpec.name])
             // console.log(`getValues(${childSpec.name})`, getValues(childSpec.name))
           }
-          // process childSpec._thisNode.input.kind : input/list
-          if (childSpec._thisNode.input?.kind === 'input/list') {
+          // process childSpec._thisNode.input.kind : input/tabular
+          if (childSpec._thisNode.input?.kind === 'input/tabular') {
             if (childSpec.name === '*') {
-              throw new Error(`ERROR: cannot process [input/list] for [*]`)
+              throw new Error(`ERROR: cannot process [input/tabular] for [*]`)
             } else {
               setValue(childSpec.name, thisNode.data[childSpec.name] || [])
             }
@@ -461,17 +460,17 @@ const PropEditor = (props) => {
               setNodeOtherNames(newNodeOtherNames)
             }
           }
-          // process childSpec._childNode.input.kind : input/list
-          if (childSpec._childNode.input.kind === 'input/list') {
+          // process childSpec._childNode.input.kind : input/tabular
+          if (childSpec._childNode.input.kind === 'input/tabular') {
             if (childSpec.name === '*') {
-              throw new Error(`ERROR: cannot process [input/list] for [*]`)
+              throw new Error(`ERROR: cannot process [input/tabular] for [*]`)
             } else {
               const childNode = lookup_child_for_ref(thisNode, childSpec.name)
               if (!!childNode) {
                 const childTypeSpec = lookup_spec_for_type(childNode.data._type)
                 const fieldName = childSpec._childNode.input.field
                 if (!fieldName) {
-                  throw new Error(`ERROR: child node [input/list] missing [field] [${JSON.stringify(childSpec._childNode.input)}]`)
+                  throw new Error(`ERROR: child node [input/tabular] missing [field] [${JSON.stringify(childSpec._childNode.input)}]`)
                 }
                 const listData = childNode.data[fieldName] || []
                 setValue(childSpec.name, listData)
@@ -494,11 +493,11 @@ const PropEditor = (props) => {
       }
       // process nodeSpec._input?.kind === 'input/rules'
       if (
-         nodeSpec?._input?.kind === 'input/list'
+         nodeSpec?._input?.kind === 'input/tabular'
       ) {
         const fieldName = nodeSpec.children.find(childSpec => !!childSpec.array)?.name
         const rules = thisNode.data[fieldName] || []
-        // console.log(`input/list`, THIS_NODE_PROPERTIES, rules)
+        // console.log(`input/tabular`, THIS_NODE_PROPERTIES, rules)
         setValue(THIS_NODE_PROPERTIES, rules)
       }
       // process customization by nodeSpec
@@ -560,7 +559,7 @@ const PropEditor = (props) => {
     } catch (err) {
       console.log(`Editor`, data, err)
       notification.error({
-        message: `Failed to Edit [ ${nodeType?.replace('/', ' / ')} ]`,
+        message: `Failed to Edit [ ${nodeType?.replaceAll('/', ' / ')} ]`,
         description: String(err),
         placement: 'bottomLeft',
       })
@@ -603,12 +602,12 @@ const PropEditor = (props) => {
       _process_this_props(lookupNode, parentNode)
     }
     //////////////////////////////////////////////////////////////////////
-    // handle nodeSpec.children._thisNode.input : 'input/list'
+    // handle nodeSpec.children._thisNode.input : 'input/tabular'
     nodeSpec.children
-      .filter(childSpec => childSpec._thisNode?.input?.kind === 'input/list')
+      .filter(childSpec => childSpec._thisNode?.input?.kind === 'input/tabular')
       .map(childSpec => {
         if (childSpec.name === '*') {
-          throw new Error(`ERROR: [input/list] do not support [*]`)
+          throw new Error(`ERROR: [input/tabular] do not support [*]`)
         } else {
           lookupNode.data[childSpec.name] = _.get(getValues(), childSpec.name) || []
           // console.log(
@@ -619,16 +618,16 @@ const PropEditor = (props) => {
         }
       })
     //////////////////////////////////////////////////////////////////////
-    // handle nodeSpec.children._childNode.input : 'input/list'
+    // handle nodeSpec.children._childNode.input : 'input/tabular'
     nodeSpec.children
-      .filter(childSpec => childSpec._childNode?.input?.kind === 'input/list')
+      .filter(childSpec => childSpec._childNode?.input?.kind === 'input/tabular')
       .map(childSpec => {
         if (childSpec.name === '*') {
-          throw new Error(`ERROR: [input/list] do not support [*]`)
+          throw new Error(`ERROR: [input/tabular] do not support [*]`)
         } else if (!childSpec._childNode?.input?.type) {
-          throw new Error(`ERROR: child node [input/list] missing [type] [${JSON.stringify(childSpec._childNode.input)}]`)
+          throw new Error(`ERROR: child node [input/tabular] missing [type] [${JSON.stringify(childSpec._childNode.input)}]`)
         } else if (!childSpec._childNode?.input?.field) {
-          throw new Error(`ERROR: child node [input/list] missing [field] [${JSON.stringify(childSpec._childNode.input)}]`)
+          throw new Error(`ERROR: child node [input/tabular] missing [field] [${JSON.stringify(childSpec._childNode.input)}]`)
         } else {
           // add props child if exist
           let childNode = lookup_child_for_ref(lookupNode, childSpec.name)
@@ -659,8 +658,8 @@ const PropEditor = (props) => {
         }
       })
     //////////////////////////////////////////////////////////////////////
-    // handle nodeSpec._input : 'input/list'
-    if (nodeSpec._input?.kind === 'input/list') {
+    // handle nodeSpec._input : 'input/tabular'
+    if (nodeSpec._input?.kind === 'input/tabular') {
       const fieldName = nodeSpec.children.find(childSpec => !!childSpec.array)?.name
       lookupNode.data[fieldName] = _.get(getValues(), THIS_NODE_PROPERTIES) || []
     }
@@ -826,6 +825,7 @@ const PropEditor = (props) => {
                             key={custom.name}
                             name={custom.name}
                             size="small"
+                            className={styles.formControl}
                             disabled={!!disabled[custom.name]}
                             childSpec={custom}
                             inputSpec={custom.input}
@@ -859,6 +859,7 @@ const PropEditor = (props) => {
                             key={custom.name}
                             name={custom.name}
                             size="small"
+                            className={styles.formControl}
                             disabled={!!disabled[custom.name]}
                             childSpec={custom}
                             inputSpec={custom.input}
@@ -922,7 +923,7 @@ const PropEditor = (props) => {
                           if (!!found) {
                             const typeSpec = found._childNode.types === 'inherit' ? found.types : found._childNode.types
                             return type_matches_spec(getValues('_type'), typeSpec)
-                              || `Reference name [ ${value} ] does not allow type [ ${getValues('_type')?.replace('/', ' / ')} ]`
+                              || `Reference name [ ${value} ] does not allow type [ ${getValues('_type')?.replaceAll('/', ' / ')} ]`
                           }
                         }
                       },
@@ -938,6 +939,8 @@ const PropEditor = (props) => {
                         <AutoSuggest
                           label="Reference"
                           name="_ref"
+                          color='secondary'
+                          size="small"
                           // className={styles.formControl}
                           disabled={
                             !parentSpec?.children.find(childSpec => childSpec.name === '*')
@@ -953,9 +956,7 @@ const PropEditor = (props) => {
                           }}
                           value={innerProps.value}
                           options={parentSpec?.children?.filter(spec => !!spec._childNode).map(child => child.name).filter(name => name !== '*')}
-                          size="small"
                           error={!!errors._ref}
-                          size="small"
                           helperText={errors._ref?.message}
                           />
                       </FormControl>
@@ -988,7 +989,7 @@ const PropEditor = (props) => {
                           if (!!found) {
                             const typeSpec = found._childNode.types === 'inherit' ? found.types : found._childNode.types
                             return type_matches_spec(value, typeSpec)
-                              || `Reference name [ ${getValues('_ref')} ] does not allow type [ ${value?.replace('/', ' / ')} ]`
+                              || `Reference name [ ${getValues('_ref')} ] does not allow type [ ${value?.replaceAll('/', ' / ')} ]`
                           }
                         }
                       }
@@ -1005,6 +1006,7 @@ const PropEditor = (props) => {
                             name="_type"
                             value={innerProps.value}
                             required={true}
+                            color='secondary'
                             size="small"
                             onChange={
                               e => {
@@ -1032,7 +1034,7 @@ const PropEditor = (props) => {
                                           { lookup_icon_for_type(type) }
                                         </ListItemIcon>
                                         <Typography variant="inherit" noWrap={true}>
-                                          { type?.replace('/', ' / ') }
+                                          { type?.replaceAll('/', ' / ') }
                                         </Typography>
                                       </MenuItem>
                                     )
@@ -1063,7 +1065,7 @@ const PropEditor = (props) => {
                   if (!!hidden[childSpec.name]) {
                     return undefined
                   }
-                  if (childSpec._thisNode.input.kind === 'input/list') {
+                  if (childSpec._thisNode.input.kind === 'input/tabular') {
                     return undefined
                   }
                   // check if this is configured by child node
@@ -1153,14 +1155,14 @@ const PropEditor = (props) => {
                 && (() => {
                   if
                   (
-                    nodeSpec?._input?.kind === 'input/list'
+                    nodeSpec?._input?.kind === 'input/tabular'
                   )
                   {
                     return <Box
                       className={styles.properties}
                       key={THIS_NODE_PROPERTIES}
                       >
-                      <InputList
+                      <InputFieldTabular
                         name={THIS_NODE_PROPERTIES}
                         key={THIS_NODE_PROPERTIES}
                         label={nodeSpec.desc}
@@ -1245,7 +1247,7 @@ const PropEditor = (props) => {
               {
                 (thisNode?.key !== '/')
                 && nodeSpec?.children
-                  .filter(childSpec => childSpec._thisNode?.input?.kind === 'input/list')
+                  .filter(childSpec => childSpec._thisNode?.input?.kind === 'input/tabular')
                   .map(childSpec => {
                     // console.log(`input/properties`, childSpec)
                     if (!!hidden[childSpec.name]) {
@@ -1256,7 +1258,7 @@ const PropEditor = (props) => {
                     }
                     // for wildecard property
                     if (childSpec.name === '*') {
-                      throw new Error(`ERROR: [input/list] do not support [*]`)
+                      throw new Error(`ERROR: [input/tabular] do not support [*]`)
                     } else {
                       // for specified property
                       return (
@@ -1264,7 +1266,7 @@ const PropEditor = (props) => {
                           className={styles.properties}
                           key={childSpec.name}
                           >
-                          <InputList
+                          <InputFieldTabular
                             name={childSpec.name}
                             key={childSpec.name}
                             label={childSpec.desc}
@@ -1285,7 +1287,7 @@ const PropEditor = (props) => {
               {
                 (thisNode?.key !== '/')
                 && nodeSpec?.children
-                  .filter(childSpec => childSpec._childNode?.input?.kind === 'input/list')
+                  .filter(childSpec => childSpec._childNode?.input?.kind === 'input/tabular')
                   .map(childSpec => {
                     // console.log(`input/properties`, childSpec)
                     if (!!hidden[childSpec.name]) {
@@ -1296,7 +1298,7 @@ const PropEditor = (props) => {
                     }
                     // for wildecard property
                     if (childSpec.name === '*') {
-                      throw new Error(`ERROR: [input/list] do not support [*]`)
+                      throw new Error(`ERROR: [input/tabular] do not support [*]`)
                     } else {
                       // for specified property
                       return (
@@ -1304,7 +1306,7 @@ const PropEditor = (props) => {
                           className={styles.properties}
                           key={childSpec.name}
                           >
-                          <InputList
+                          <InputFieldTabular
                             name={childSpec.name}
                             key={childSpec.name}
                             label={childSpec.desc}
